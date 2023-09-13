@@ -1,7 +1,6 @@
-// main.dart
-
 import 'package:flutter/material.dart';
-import 'linked_list.dart';
+import 'dart:collection';
+import 'dart:math';
 
 void main() {
   runApp(MyApp());
@@ -13,59 +12,104 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final linkedList = LinkedList<int>();
+  final queue = ListQueue<int>();
+  final stack = Stack<int>();
+  String message = '';
 
-  @override
-  void initState() {
-    super.initState();
-    linkedList.insert(1);
-    linkedList.insert(2);
-    linkedList.insert(3);
-  }
+  _MyAppState() {
+    queue.addAll([1, 2, 3]);
+    queue.addFirst(4);
+    queue.addLast(5);
 
-  void insertElement() {
-    linkedList.insert(2);
-
-    setState(() {});
-  }
-
-  void removeElement() {
-    linkedList.remove(2);
-
-    setState(() {});
+    stack.push(3);
+    stack.push(2);
+    stack.push(5);
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Custom Stack and Queue App',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Linked List Example'),
+          title: Text('Custom Stack and Queue App'),
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Linked List Contents:',
+                'Queue Contents: ${queue.join(", ")}',
                 style: TextStyle(fontSize: 20),
               ),
               Text(
-                '${linkedList.toList()}',
+                'Stack Contents: ${stack.join(", ")}',
                 style: TextStyle(fontSize: 20),
               ),
               ElevatedButton(
-                onPressed: insertElement,
-                child: Text('Insert 2'),
+                onPressed: () {
+                  final random = Random();
+                  // Add an item to the queue and stack
+                  final newItem = random.nextInt(100);
+                  queue.add(newItem);
+                  stack.push(newItem);
+                  print('Adding item $newItem'); // Display adding message
+                  setState(() {
+                    message = 'Adding items'; // Update the message
+                  });
+                },
+                child: Text('Add Item'),
               ),
               ElevatedButton(
-                onPressed: removeElement,
-                child: Text('Remove 2'),
+                onPressed: () {
+                  // Remove an item from the stack
+                  final removedItem = stack.pop();
+                  if (stack.isEmpty) {
+                    setState(() {
+                      message = 'Stack is empty'; // Update the message
+                    });
+                  } else {
+                    setState(() {
+                      message =
+                          'removing items'; // Clear the message if the stack is not empty
+                    });
+                  }
+                  if (removedItem != null) {
+                    print('Removed item $removedItem');
+                  }
+                },
+                child: Text('Remove from Stack'),
+              ),
+              Text(
+                message, // Display the message
+                style: TextStyle(
+                    fontSize: 20, color: Colors.red), // Customize the style
               ),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class Stack<T> {
+  final queue = Queue<T>();
+  bool get isEmpty => queue.isEmpty;
+  void push(T t) {
+    queue.addFirst(t);
+  }
+
+  T? pop() {
+    if (queue.isNotEmpty) {
+      final first = queue.first;
+      queue.removeFirst();
+      return first;
+    }
+    return null;
+  }
+
+  String join(String separator) {
+    return queue.join(separator);
   }
 }
